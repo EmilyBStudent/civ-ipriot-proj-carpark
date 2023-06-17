@@ -1,0 +1,9 @@
+[config]
+name = "Tiny Backstreet Carpark"
+location = "Moondalup"
+total-spaces = 2
+total-cars = 0
+broker = "localhost"
+port = 1883
+topic-root = "smartpark"
+topic-qualifier = "carpark"
