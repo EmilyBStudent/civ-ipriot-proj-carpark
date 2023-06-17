@@ -25,7 +25,7 @@ class CarPark:
 
     @property
     def temperature(self):
-        self._temperature
+        return self._temperature
     
     @temperature.setter
     def temperature(self, value):
@@ -50,8 +50,6 @@ class CarPark:
     def on_car_entry(self):
         self.total_cars += 1
         self._publish_event()
-
-
 
     def on_car_exit(self):
         self.total_cars -= 1
@@ -80,5 +78,4 @@ if __name__ == '__main__':
               }
     # TODO: Read config from file
     car_park = CarPark(config)
-    print("Carpark initialized")
     print("Carpark initialized")
