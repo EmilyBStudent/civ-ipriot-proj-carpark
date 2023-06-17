@@ -22,6 +22,7 @@ class CarPark:
         self.mqtt_device = mqtt_device.MqttDevice(config)
         self.mqtt_device.client.on_message = self.on_message
         self.mqtt_device.client.subscribe('sensor')
+        self._publish_event()
         if not test_mode:
            self.mqtt_device.client.loop_forever()
 
