@@ -52,7 +52,8 @@ class CarPark:
         self._publish_event()
 
     def on_car_exit(self):
-        self.total_cars -= 1
+        if self.total_cars > 0:
+            self.total_cars -= 1
         self._publish_event()
 
     def on_message(self, client, userdata, msg: MQTTMessage):
