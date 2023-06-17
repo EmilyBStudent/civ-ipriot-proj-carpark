@@ -5,17 +5,18 @@ import paho.mqtt.client as paho
 from paho.mqtt.client import MQTTMessage
 
 
-class CarPark(mqtt_device.MqttDevice):
+class CarPark:
     """Creates a carpark object to store the state of cars in the lot"""
 
     def __init__(self, config):
-        super().__init__(config)
         self.total_spaces = config['total-spaces']
         self.total_cars = config['total-cars']
-        self.client.on_message = self.on_message
-        self.client.subscribe('sensor')
-        self.client.loop_forever()
         self._temperature = None
+
+        self.mqtt_device = mqtt_device.MqttDevice(config)
+        self.mqtt_device.on_message = self.on_message
+        self.mqtt_device.client.subscribe('sensor')
+        self.mqtt_device.client.loop_forever()
 
     @property
     def available_spaces(self):
