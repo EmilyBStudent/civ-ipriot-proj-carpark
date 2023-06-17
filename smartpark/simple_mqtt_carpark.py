@@ -37,7 +37,10 @@ class CarPark:
 
     @property
     def temperature(self):
-        return self._temperature
+        if self._temperature is None:
+            return 'unknown'
+        else:
+            return self._temperature
     
     @temperature.setter
     def temperature(self, value):
@@ -50,13 +53,13 @@ class CarPark:
             (
                 f"TIME: {readable_time}, "
                 + f"SPACES: {self.available_spaces}, "
-                + "TEMPC: 42"
+                + f"TEMPC: {self.temperature}"
             )
         )
         message = (
             f"TIME: {readable_time}, "
             + f"SPACES: {self.available_spaces}, "
-            + "TEMPC: 42"
+            + f"TEMPC: {self.temperature}"
         )
         self.mqtt_device.client.publish('display', message)
 
@@ -72,10 +75,25 @@ class CarPark:
         self._publish_event()
 
     def on_message(self, client, userdata, msg: MQTTMessage):
-        """Handle messages received from the sensor."""
+        """
+        Handle messages received from the sensor. Extract and record the
+        current temperature in the carpark, then handle the car entering or
+        exiting the carpark.
+        """
         payload = msg.payload.decode()
-        # TODO: Extract temperature from payload
-        # self.temperature = ... # Extracted value
+
+        fields = payload.split(',')
+        for field in fields:
+            if field.strip().startswith('TEMPC'):
+                data = field.split(':', 1)[1]
+                try:
+                    new_temperature = int(data.strip())
+                    self.temperature = new_temperature
+                except ValueError as value_error:
+                    self.temperature = None
+                    print("Error: Unable to parse temperature as int.")
+                    print(value_error)
+
         if 'exit' in payload:
             self.on_car_exit()
         else:
