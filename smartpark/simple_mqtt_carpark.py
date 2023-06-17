@@ -14,7 +14,7 @@ class CarPark:
         self._temperature = None
 
         self.mqtt_device = mqtt_device.MqttDevice(config)
-        self.mqtt_device.on_message = self.on_message
+        self.mqtt_device.client.on_message = self.on_message
         self.mqtt_device.client.subscribe('sensor')
         self.mqtt_device.client.loop_forever()
 
@@ -45,7 +45,7 @@ class CarPark:
             + f"SPACES: {self.available_spaces}, "
             + "TEMPC: 42"
         )
-        self.client.publish('display', message)
+        self.mqtt_device.client.publish('display', message)
 
     def on_car_entry(self):
         self.total_cars += 1
