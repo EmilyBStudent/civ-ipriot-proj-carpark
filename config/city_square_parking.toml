@@ -1,0 +1,9 @@
+[config]
+name = "Moondalup City Square Parking"
+location = "Moondalup"
+total-spaces = 192
+total-cars = 0
+broker = "localhost"
+port = 1883
+topic-root = "smartpark"
+topic-qualifier = "carpark"
