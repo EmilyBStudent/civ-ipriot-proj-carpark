@@ -11,7 +11,7 @@ class CarDetector:
     detecting a car.
     """
 
-    def __init__(self, config_file):
+    def __init__(self, config_file: str):
         """
         Create an MQTT publisher to provide updates and a Car Detector window
         to simulate cars entering and exiting the carpark.
