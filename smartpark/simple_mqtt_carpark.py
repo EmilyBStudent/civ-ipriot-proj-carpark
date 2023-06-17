@@ -8,7 +8,7 @@ from paho.mqtt.client import MQTTMessage
 class CarPark:
     """Creates a carpark object to store the state of cars in the lot"""
 
-    def __init__(self, config_file: str):
+    def __init__(self, config_file: str, test_mode: bool=False):
         config = parse_config(config_file)
         self.total_spaces = config['total-spaces']
         self.total_cars = config['total-cars']
@@ -17,7 +17,8 @@ class CarPark:
         self.mqtt_device = mqtt_device.MqttDevice(config)
         self.mqtt_device.client.on_message = self.on_message
         self.mqtt_device.client.subscribe('sensor')
-        self.mqtt_device.client.loop_forever()
+        if not test_mode:
+           self.mqtt_device.client.loop_forever()
 
     @property
     def available_spaces(self):
@@ -68,5 +69,5 @@ class CarPark:
 
 
 if __name__ == '__main__':
-    car_park = CarPark('../config/city_square_parking.toml')
+    car_park = CarPark('../config/city_square_parking.toml', test_mode=True)
     print("Carpark initialized")
