@@ -77,11 +77,17 @@ class CarDetector:
         return self._temperature
 
     @temperature.setter
-    def temperature(self, value):
+    def temperature(self, value: int):
         """
         Sets the current temperature, remaining within the maximum and minimum
         temperature range.
+
+        :param value: integer, new temperature to record
+        :raises ValueError: if value passed in is not an integer
         """
+        if type(value) != int:
+            raise ValueError('Temperature must be an integer')
+
         self._temperature = value
         self._temperature = max(self.temperature, self.MIN_TEMPERATURE)
         self._temperature = min(self.temperature, self.MAX_TEMPERATURE)

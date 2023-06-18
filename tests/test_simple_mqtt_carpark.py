@@ -39,3 +39,29 @@ class TestCarPark(unittest.TestCase):
         self.carpark.on_car_exit()
         self.assertEqual(self.carpark.total_spaces,
                          self.carpark.available_spaces)
+
+    def test_temperature_can_be_set(self):
+        """
+        The car park temperature can be set to an integer and read back
+        successfully.
+        """
+        self.carpark.temperature = 25
+        self.assertEqual(25, self.carpark.temperature)
+
+    def test_temperature_can_be_unknown(self):
+        """
+        The car park temperature can be set to None and is read back as
+        'unknown'.
+        """
+        self.carpark.temperature = None
+        self.assertEqual('unknown', self.carpark.temperature)
+
+    def test_invalid_temperature_raises_exception(self):
+        """
+        Setting the car park temperature to something other than an int or
+        None raises a ValueError.
+        """
+        with (self.assertRaises(ValueError)):
+            self.carpark.temperature = '25'
+        with (self.assertRaises(ValueError)):
+            self.carpark.temperature = 25.025

@@ -66,7 +66,11 @@ class CarPark:
 
         :param value: int representing last known temperature, or None
             representing unknown temperature
+        :raises ValueError: if value is not an int or None
         """
+        if value is not None and type(value) != int:
+            raise ValueError('Temperature must be an integer, ' +
+                             'or None if unknown')
         self._temperature = value
         
     def _publish_event(self):
