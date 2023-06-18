@@ -15,6 +15,8 @@ class CarPark:
         Create a new MQTT device to listen for updates from the carpark
         sensor and publish updates to the display.
         """
+        self._test_mode = test_mode
+
         config = parse_config(config_file)
         self.carpark_name = config['name']
         self.total_spaces = config['total-spaces']
@@ -61,7 +63,8 @@ class CarPark:
         )
         print(message)
 
-        self._log_update(message)
+        if not self._test_mode:
+            self._log_update(message)
         self.mqtt_device.client.publish('carpark', message)
 
     def _log_update(self, message: str):
