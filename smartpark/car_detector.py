@@ -1,3 +1,8 @@
+"""
+Provides a simple window with buttons to simulate sensor data from the car
+park. Simulates cars entering and exiting the car park and the local
+temperature being monitored, and publishes this data to MQTT.
+"""
 import tkinter as tk
 from datetime import datetime
 import random
@@ -16,7 +21,10 @@ class CarDetector:
     def __init__(self, config_file: str):
         """
         Create an MQTT publisher to provide updates and a Car Detector window
-        to simulate cars entering and exiting the carpark.
+        to simulate cars entering and exiting the car park.
+
+        :param config_file: string containing relative path and filename of
+            the configuration file for the car park
         """
         config = parse_config(config_file)
         self.mqtt_device = mqtt_device.MqttDevice(config)
@@ -42,7 +50,10 @@ class CarDetector:
 
     def _publish_event(self, action: str):
         """
-        Publish an event via MQTT when a car enters or exits the carpark.
+        Publish an event via MQTT when a car enters or exits the car park.
+
+        :param action: string naming the kind of event to be published: either
+            'entry' or 'exit'
         """
         readable_time = datetime.now().strftime('%H:%M')
         self.update_temperature()
@@ -67,24 +78,25 @@ class CarDetector:
 
     @temperature.setter
     def temperature(self, value):
+        """
+        Sets the current temperature, remaining within the maximum and minimum
+        temperature range.
+        """
         self._temperature = value
         self._temperature = max(self.temperature, self.MIN_TEMPERATURE)
         self._temperature = min(self.temperature, self.MAX_TEMPERATURE)
 
     def update_temperature(self):
-        """
-        Updates the current temperature, remaining within the maximum
-        and minimum temperature range.
-        """
+        """Updates the temperature within a range of +/- 2 degrees."""
         change = random.randint(-2, 2)
         self.temperature = self.temperature + change
 
     def incoming_car(self):
-        """Publish an event advising that a car has entered the carpark."""
+        """Publish an event advising that a car has entered the car park."""
         self._publish_event('entry')
 
     def outgoing_car(self):
-        """Publish an event advising that a car has exited the carpark."""
+        """Publish an event advising that a car has exited the car park."""
         self._publish_event('exit')
 
 

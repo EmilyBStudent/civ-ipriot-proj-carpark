@@ -1,5 +1,5 @@
 """
-Display carpark availability and temperature data for use of drivers in
+Display car park availability and temperature data for use of drivers in
 Moondalup.
 """
 import threading
@@ -28,8 +28,8 @@ class WindowedDisplay:
         show the display (blocking) call .show() on the returned object.
 
         :param title: String containing the title of the window (usually the
-            name of your carpark from the config)
-        :param display_fields: An iterable (usually a list) of field names for
+            name of your car park from the config)
+        :param display_fields: An Iterable (usually a list) of field names for
             the UI. Updates to values must be presented in a dictionary with
             these values as keys.
         """
@@ -84,11 +84,11 @@ class CarParkDisplay:
 
     def __init__(self, config_file: str):
         """
-        Start an MQTT client to subscribe to carpark updates, and create a
+        Start an MQTT client to subscribe to car park updates, and create a
         window to display the updates received.
 
         :param config_file: string containing relative path and filename of
-            the carpark configuration to use in setting up the MQTT client
+            the car park configuration to use in setting up the MQTT client
         """
         config = parse_config(config_file)
         self.carpark_name = config['name']
@@ -109,11 +109,11 @@ class CarParkDisplay:
 
     def on_message(self, client, userdata, msg: MQTTMessage):
         """
-        On receiving a carpark update through MQTT, display the new information
-        in the window.
+        On receiving a car park update through MQTT, display the new
+        information in the window.
 
         :param client: The MQTT client which received the message.
-        :param userdata: userdata passed with the message
+        :param userdata: userdata passed with the MQTT message
         :param msg: the message received, in MQTTMessage format
         """
         payload = msg.payload.decode()
