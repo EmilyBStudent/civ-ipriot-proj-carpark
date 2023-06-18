@@ -19,7 +19,6 @@ class CarDetector:
         to simulate cars entering and exiting the carpark.
         """
         config = parse_config(config_file)
-        config['topic-qualifier'] = 'sensor'    # TODO: clean up qualifiers
         self.mqtt_device = mqtt_device.MqttDevice(config)
 
         self._temperature = random.randint(self.MIN_TEMPERATURE,
