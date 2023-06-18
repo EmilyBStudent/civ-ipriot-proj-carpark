@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 
 import mqtt_device
 from config_parser import parse_config
@@ -15,6 +16,7 @@ class CarPark:
         sensor and publish updates to the display.
         """
         config = parse_config(config_file)
+        self.carpark_name = config['name']
         self.total_spaces = config['total-spaces']
         self.total_cars = config['total-cars']
         self._temperature = None
@@ -47,21 +49,48 @@ class CarPark:
         self._temperature = value
         
     def _publish_event(self):
-        """ Publish the current carpark statistics to the MQTT device. """
+        """
+        Publish the current carpark statistics to the MQTT device and log the
+        data transmitted.
+        """
         readable_time = datetime.now().strftime('%H:%M')
-        print(
-            (
-                f"TIME: {readable_time}, "
-                + f"SPACES: {self.available_spaces}, "
-                + f"TEMPC: {self.temperature}"
-            )
-        )
         message = (
             f"TIME: {readable_time}, "
             + f"SPACES: {self.available_spaces}, "
             + f"TEMPC: {self.temperature}"
         )
+        print(message)
+
+        self._log_update(message)
         self.mqtt_device.client.publish('carpark', message)
+
+    def _log_update(self, message: str):
+        """
+        Log the transmitted message to a text file. It is expected that the
+        message as transmitted will already contain the update time. Add the
+        date to the message to be logged for clarity.
+
+        :param message: A string containing the message published via MQTT.
+        :returns: boolean representing whether log entry was successfully saved
+        """
+        log_directory = '../logs/'
+        log_path = Path(log_directory)
+        if not log_path.exists():
+            log_path.mkdir()
+
+        readable_date = datetime.now().strftime('%Y-%m-%d')
+        message = f"DATE: {readable_date}, {message}"
+
+        filename = self.carpark_name.replace(' ', '-').lower()
+        filename = log_directory + filename + '.log'
+        try:
+            with open(filename, "a") as file:
+                file.write(message + '\n')
+        except OSError as os_error:
+            print(f"Error: Unable to write to log file '{filename}'.")
+            print(os_error.strerror)
+            return False
+        return True
 
     def on_car_entry(self):
         """Handle a car entering the carpark."""
