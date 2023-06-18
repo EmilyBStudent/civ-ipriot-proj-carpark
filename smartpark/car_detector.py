@@ -18,13 +18,15 @@ class CarDetector:
     MIN_TEMPERATURE = 10
     MAX_TEMPERATURE = 35
 
-    def __init__(self, config_file: str):
+    def __init__(self, config_file: str, test_mode: bool=False):
         """
         Create an MQTT publisher to provide updates and a Car Detector window
         to simulate cars entering and exiting the car park.
 
         :param config_file: string containing relative path and filename of
             the configuration file for the car park
+        :param test_mode: bool representing whether the class is running in
+            unit test mode (in which case we avoid running any blocking loops)
         """
         config = parse_config(config_file)
         self.mqtt_device = mqtt_device.MqttDevice(config)
@@ -46,7 +48,8 @@ class CarDetector:
         )
         self.btn_outgoing_car.pack(padx=10, pady=5)
 
-        self.root.mainloop()
+        if not test_mode:
+            self.root.mainloop()
 
     def _publish_event(self, action: str):
         """
