@@ -61,7 +61,7 @@ class CarPark:
             + f"SPACES: {self.available_spaces}, "
             + f"TEMPC: {self.temperature}"
         )
-        self.mqtt_device.client.publish('display', message)
+        self.mqtt_device.client.publish('carpark', message)
 
     def on_car_entry(self):
         """Handle a car entering the carpark."""
