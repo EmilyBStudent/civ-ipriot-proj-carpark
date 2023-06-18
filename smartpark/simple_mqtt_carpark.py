@@ -1,3 +1,7 @@
+"""
+Representation of a car park. Receives sensor data from the car park, saves
+and processes it, and publishes status updates to be displayed.
+"""
 from datetime import datetime
 from pathlib import Path
 
@@ -7,13 +11,21 @@ from paho.mqtt.client import MQTTMessage
 
 
 class CarPark:
-    """Creates a carpark object to store the state of cars in the lot"""
+    """
+    Creates a car park object to store the state of cars in the lot and
+    publish updates to MQTT.
+    """
 
     def __init__(self, config_file: str, test_mode: bool=False):
         """
-        Initialise the carpark with data from the given config file.
-        Create a new MQTT device to listen for updates from the carpark
+        Initialise the car park with data from the given config file.
+        Create a new MQTT device to listen for updates from the car park
         sensor and publish updates to the display.
+
+        :param config_file: string containing relative path and filename of
+            the car park configuration to use in setting up the MQTT client
+        :param test_mode: boolean representing whether the class is being used
+            in unit testing mode
         """
         self._test_mode = test_mode
 
@@ -34,13 +46,14 @@ class CarPark:
     def available_spaces(self):
         """
         Calculate available parking spaces based on total spaces and current
-        number of cars in the carpark.
+        number of cars in the car park. Should never fall below 0.
         """
         available = self.total_spaces - self.total_cars
         return max(available, 0)
 
     @property
     def temperature(self):
+        """Return the current temperature, if known."""
         if self._temperature is None:
             return 'unknown'
         else:
@@ -48,11 +61,21 @@ class CarPark:
     
     @temperature.setter
     def temperature(self, value):
+        """
+        Record the current temperature.
+
+        :param value: int representing last known temperature, or None
+            representing unknown temperature
+        :raises ValueError: if value is not an int or None
+        """
+        if value is not None and type(value) != int:
+            raise ValueError('Temperature must be an integer, ' +
+                             'or None if unknown')
         self._temperature = value
         
     def _publish_event(self):
         """
-        Publish the current carpark statistics to the MQTT device and log the
+        Publish the current car park statistics to the MQTT device and log the
         data transmitted.
         """
         readable_time = datetime.now().strftime('%H:%M')
@@ -96,12 +119,19 @@ class CarPark:
         return True
 
     def on_car_entry(self):
-        """Handle a car entering the carpark."""
+        """
+        Handle a car entering the car park. Total cars may be higher than
+        total parking spots as it is possible for a car to be driving around
+        the car park unable to find a parking spot.
+        """
         self.total_cars += 1
         self._publish_event()
 
     def on_car_exit(self):
-        """Handle a car exiting the carpark."""
+        """
+        Handle a car exiting the car park. Total cars should never fall below
+        0.
+        """
         if self.total_cars > 0:
             self.total_cars -= 1
         self._publish_event()
@@ -109,8 +139,12 @@ class CarPark:
     def on_message(self, client, userdata, msg: MQTTMessage):
         """
         Handle messages received from the sensor. Extract and record the
-        current temperature in the carpark, then handle the car entering or
-        exiting the carpark.
+        current temperature in the car park, then handle the car entering or
+        exiting the car park.
+
+        :param client: The MQTT client which received the message.
+        :param userdata: userdata passed with the MQTT message
+        :param msg: the message received, in MQTTMessage format
         """
         payload = msg.payload.decode()
 
@@ -134,4 +168,3 @@ class CarPark:
 
 if __name__ == '__main__':
     car_park = CarPark('../config/city_square_parking.toml')
-    print("Carpark initialized")
