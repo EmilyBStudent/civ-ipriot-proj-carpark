@@ -81,6 +81,12 @@ class CarParkDisplay:
     """
     # determines what fields appear in the UI
     fields = ['Available bays', 'Temperature', 'At']
+    # map UI fields to MQTT data fields
+    mqtt_data_map = {
+        'Available bays': 'SPACES',
+        'Temperature': 'TEMPC',
+        'At': 'TIME',
+    }
 
     def __init__(self, config_file: str):
         """
@@ -129,12 +135,10 @@ class CarParkDisplay:
 
         # NOTE: Dictionary keys *must* be the same as the class fields
         field_values = dict()
-        if received['SPACES'] == '0':
+        for field in self.fields:
+            field_values[field] = received[self.mqtt_data_map[field]]
+        if field_values['Available bays'] == '0':
             field_values['Available bays'] = 'FULL'
-        else:
-            field_values['Available bays'] = received['SPACES']
-        field_values['Temperature'] = received['TEMPC']
-        field_values['At'] = received['TIME']
 
         self.window.update(field_values)
 
