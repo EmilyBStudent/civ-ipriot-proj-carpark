@@ -2,6 +2,48 @@
 
 A simulated workplace environment where students must demonstrate OO skills by interpreting and interacting with modern software requirements.
 
+## Instructions to Run Application
+
+You will need to open four Command Prompt or Terminal windows to run this project.
+
+In each window, enter the commands below to run the project. The commands assume you are already in the main project
+directory, civ-ipriot-proj-carpark.
+
+### Terminal 1
+
+You will need to change this if you are using a different MQTT broker, not Mosquitto. 
+
+```text
+mosquitto -v
+```
+
+### Terminal 2
+
+```text
+./venv/Scripts/activate
+cd smartpark
+python car_detector.py
+```
+
+### Terminal 3
+
+```text
+./venv/Scripts/activate
+cd smartpark
+python simple_mqtt_carpark.py
+```
+
+### Terminal 4
+
+```text
+./venv/Scripts/activate
+cd smartpark
+python carpark_display.py
+```
+
+Click on the "Incoming Car" and "Outgoing Car" in the Car Detector window to simulate vehicles entering and exiting the
+carpark. You should see the data update in the Car Park Display window each time a car enters or exits the car park.
+
 ## Scenario
 
 You are working as a junior software innovation engineer for the City of Moondalup in the Department of Transport. The department wants to upgrade a few public parking spaces by providing information about the number of available parking spots in near real time for each one. The parking lots in question do not have boom gates.
